@@ -21,6 +21,7 @@ SITE = Path(__file__).resolve().parents[1]
 TOB = Path(r"C:\Users\ayala\Projects\TOB-OS")
 PAGE = (SITE / "index.html").read_text(encoding="utf-8")
 FACEBOOK = "https://www.facebook.com/Soundvibrationsanctuary/"
+INSTAGRAM = "https://www.instagram.com/soundvibrationsanctuary/"
 
 
 class Tags(HTMLParser):
@@ -55,6 +56,11 @@ def test_her_real_details_are_on_the_page():
     assert "a peaceful environment where sound and vibration support relaxation, clarity, and well-being" in PAGE.lower()
     assert "Hibiscus Moon Academy" in PAGE
     assert PAGE.count(FACEBOOK) >= 2
+    # her Instagram: linked in the header, the social area and the footer; its bio gives the shop and its hours
+    assert PAGE.count(INSTAGRAM) >= 4
+    assert re.search(r'class="nav-social".{0,400}' + re.escape(INSTAGRAM), PAGE, re.S)
+    assert re.search(r'<footer.*' + re.escape(INSTAGRAM), PAGE, re.S)
+    assert "Crystals, specimens, gifts &amp; jewelry" in PAGE and "Mon to Fri, 11 am to 2 pm" in PAGE
     # her own price list (soundvibrationsanctuary.com/list), nothing made up
     for name, price in [("Group sound meditation", "$20"), ("Private sound healing", "$80"),
                         ("Sound meditation with your dog", "$30"), ("On-body Tibetan bowl vibration", "$100"),
@@ -78,14 +84,17 @@ def test_local_business_schema_is_valid_and_honest():
     assert data["@type"] == "HealthAndBeautyBusiness" and data["name"] == "Sound Vibration Sanctuary"
     assert data["address"]["streetAddress"] == "212 W Superstition Blvd"
     assert data["address"]["addressLocality"] == "Apache Junction" and data["address"]["addressRegion"] == "AZ"
-    assert FACEBOOK in data["sameAs"]
+    assert FACEBOOK in data["sameAs"] and INSTAGRAM in data["sameAs"]
+    hours = data["openingHoursSpecification"][0]
+    assert hours["dayOfWeek"] == ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    assert (hours["opens"], hours["closes"]) == ("11:00", "14:00")
     assert "telephone" not in data and "aggregateRating" not in data and "review" not in data
     assert len(data["hasOfferCatalog"]["itemListElement"]) == 8
 
 
 def test_every_picture_is_there_with_alt_text_and_a_size():
     imgs = tags("img")
-    assert len(imgs) >= 13
+    assert len(imgs) >= 14
     for a in imgs:
         src = a["src"]
         assert (SITE / src).is_file(), f"missing {src}"
