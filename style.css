@@ -57,7 +57,7 @@ p { margin: 0 0 1em; }
 .ph { background: rgba(133, 119, 184, .14); border-bottom: 2px dotted var(--lavender); padding: 0 .2em; border-radius: 4px; }
 
 /* Buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5em; padding: .95em 1.6em; border-radius: 999px; font: 700 .95rem/1 var(--font-body); letter-spacing: .03em; text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: transform .25s ease, background .25s ease, box-shadow .25s ease; min-height: 48px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5em; padding: .95em 1.6em; border-radius: 999px; font: 700 .95rem/1 var(--font-body); letter-spacing: .03em; white-space: nowrap; text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: transform .25s ease, background .25s ease, box-shadow .25s ease; min-height: 48px; }
 .btn-primary { background: var(--violet); color: var(--white); box-shadow: 0 10px 30px -12px rgba(91, 74, 153, .8); }
 .btn-primary:hover { background: var(--plum); color: var(--white); transform: translateY(-2px); }
 .btn-ghost { background: rgba(255, 255, 255, .12); color: var(--white); border-color: rgba(255, 255, 255, .6); backdrop-filter: blur(6px); }
@@ -73,7 +73,7 @@ p { margin: 0 0 1em; }
 .brand-name { font-family: var(--font-head); font-size: 1.35rem; font-weight: 600; line-height: 1.05; }
 .brand-name small { display: block; font-family: var(--font-body); font-size: .68rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
 .menu { display: none; list-style: none; margin: 0; padding: 0; }
-.menu a { text-decoration: none; color: var(--ink); font-weight: 600; font-size: .95rem; }
+.menu a { white-space: nowrap; text-decoration: none; color: var(--ink); font-weight: 600; font-size: .95rem; }
 .menu a:hover { color: var(--violet); }
 .nav-book { display: none; }
 .nav-toggle { display: inline-flex; flex-direction: column; justify-content: center; gap: 5px; width: 48px; height: 48px; border: 0; border-radius: 12px; background: var(--mist); cursor: pointer; padding: 0 13px; }
@@ -83,10 +83,11 @@ p { margin: 0 0 1em; }
 .nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 .nav-open .menu { display: flex; flex-direction: column; position: absolute; left: 0; right: 0; top: 100%; background: var(--ivory); padding: 8px 16px 20px; border-bottom: 1px solid var(--line); box-shadow: var(--shadow); }
 .nav-open .menu a { display: block; padding: 12px 4px; font-size: 1.1rem; border-bottom: 1px solid var(--line); }
-@media (min-width: 900px) {
+@media (min-width: 640px) { .nav-book { display: inline-flex; margin-left: auto; padding: .8em 1.3em; min-height: 44px; } }
+@media (min-width: 1180px) {
   .menu { display: flex; gap: 28px; }
   .nav-toggle { display: none; }
-  .nav-book { display: inline-flex; padding: .8em 1.3em; min-height: 44px; }
+  .nav-book { margin-left: 0; }
 }
 
 /* Hero */
@@ -251,8 +252,7 @@ textarea { min-height: 120px; resize: vertical; }
 .nav-social a:hover { background: var(--mist); color: var(--plum); }
 .nav-social svg { width: 20px; height: 20px; }
 .social + .social { margin-left: 20px; }
-@media (min-width: 900px) {
+@media (min-width: 1180px) {
   .nav-social { display: flex; margin-left: auto; margin-right: 8px; }
   .menu .menu-social { display: none; }
 }
-@media (min-width: 900px) and (max-width: 1100px) { .menu { gap: 18px; } }
