@@ -1,37 +1,62 @@
-# Crystals & Crosses: website demo
+# Sound Vibration Sanctuary: website
 
-One-page site for Crystals & Crosses, Linda Huss's crystal shop in Apache Junction, AZ.
-Built to live at https://tmpbizz.com/demo/crystalscrosses/ (the share tags already point there).
+One-page site for Sound Vibration Sanctuary, sound healing and crystal work at 212 W Superstition Blvd,
+Apache Junction, AZ. It replaces her GoDaddy site (soundvibrationsanctuary.com), and the share tags and
+canonical link already point at that address. (The folder keeps its old name so TOB's jobs and links still find it.)
 
-Plain HTML, CSS and JavaScript in `index.html`, no build step. Fonts (Marcellus, Figtree, both
-SIL Open Font License) load from Google Fonts.
+Plain HTML, CSS and JavaScript with no build step: `index.html`, `style.css` (colours at the top as named
+variables), `script.js` (menu, forms, the singing bowl tone). Fonts load from Google Fonts: Cormorant Garamond for
+headings and Quicksand for the text (Quicksand is the font her current site uses). Both are SIL Open Font License.
+
+## Where the content came from
+- **Her website** (home page and `/list`, fetched 2026-11-21): the name, the address, the tagline "Discover Inner
+  Peace", the "Our Story" text (used word for word), the mailing list line, and the full menu and price list with her
+  descriptions: group sound meditation $20, private session (1 to 4 people) $80 plus $20 per extra guest up to 14,
+  sound meditation with your dog $30, on-body Tibetan bowl vibration $100, chakra reading and balancing $100, oracle
+  card reading (Kyle Gray decks) $35, and two crystal classes at $20. It also gave her credentials (Sound Healing
+  Practitioner, Certified Crystal Practitioner from Hibiscus Moon Academy) and her brand lavender `#8577b8`.
+- **Facebook** (facebook.com/Soundvibrationsanctuary): Facebook only let us see the page name and town, so no posts,
+  photos, hours or phone number came from there. The page links to it in the reviews, contact and footer areas.
+- **Photos**: all made on this PC with TOB's image generator (`python -m tob.creator.imagegen`, Z-Image Turbo).
+  They are not stock and have no words in them. They are in `images/` as WebP. `og.png` is the link preview and
+  `favicon.svg` / `apple-touch-icon.png` are the icons (sound ripples on deep plum).
 
 ## On the page
-- Hero: an amethyst crystal cluster drawn live on a canvas, in front of the Superstition Mountains
-  at dusk. Drag to turn it; tap a point (or press Enter) to ring it like a crystal singing bowl.
-  Each point plays a different note. It stops animating when off screen and holds still for
-  visitors who ask for reduced motion.
-- Live "Open now / Opens at" status in Arizona time, in the hero and the hours card
-- Sessions with prices; every "Text to book" button opens a text to Linda with the session filled in
-- Sound healing circle: works out the next third Thursday automatically
-- Crystal finder: pick an intention, see three stones, text Linda for a custom set
-- On the shelves, rock club discount, crystal re-tune, Meet Linda with her certifications
-- Contact form that opens a text or email to Linda with the message filled in (no server needed)
-- "Powered by TMP" footer credit
+Header with a Book button, a hero with "Hear a singing bowl" (a soft bowl tone made in the browser, only when
+clicked), a welcome quote and three pillars, sessions and prices (each "Book this" picks that session in the form),
+crystal classes and upcoming events, what to expect, her story with her credentials, a gallery, gift cards, a reviews
+area, hours and location with a map and directions, a booking form, a mailing list signup, a Facebook link, and a
+footer with the TMP credit. It has LocalBusiness schema (HealthAndBeautyBusiness, with her real prices as offers),
+share tags, labelled forms, a skip link, visible focus, support for reduced motion, and it is mobile-first.
 
-## Things to confirm with Linda
-- **Hours:** her current site lists two different schedules. The home page says Wed to Fri
-  9 to noon and 2 to 5, Sat 10 to 1. The contact page says Wed to Fri 10 to 3, Sat 10 to 1.
-  This demo uses the home page hours. Edit the `HOURS` object in `index.html` to change them.
-- **Address:** her site says 185 N Apache Trail, Suite 8. An older VisitAJ listing says
-  320 W Superstition Blvd, Suite 109.
-- **OPUS SoundBed:** her site still says "Coming June 2024". Check it's bookable.
-- **Life coaching:** listed with "Ask" for the price since her site doesn't give one.
-- **Email:** uses CrystalClearChoicesAZ@gmail.com from her site. Directories also list
-  goodvibes@crystalsandcrossesaz.com.
+## Placeholders to fill in
+These are shown with a dotted lavender underline (class `ph`) so they're easy to spot and click in the builder.
+They aren't on her site or Facebook, so nothing was made up:
+1. **Her name** under the story ("With love, your name").
+2. **Phone number** (Visit section). Once she gives it, also add `"telephone"` to the schema in `<head>`.
+3. **Class days and times**: the group sound meditation and crystal class rows in Hours.
+4. **Upcoming events**: three dates and times (group sound meditation, with your dog, crystal grids).
+5. **Gift cards**: the amounts and how to buy them.
+6. **Reviews**: three quotes and guest names (real ones from Facebook or clients, with their OK).
+7. **Email for the forms**: the booking and mailing list forms send nothing yet. Put her email in `data-email=""` on
+   `<form id="book-form">` and `<form id="news-form">` and they'll open an email to her with everything filled in.
+   Until then they thank the visitor and point them to Facebook. A form service (like Formspree) or her mailing list
+   tool can replace this later.
+8. **Photos of the real space**: the generated photos stand in until she has her own. Use Swap picture in the
+   builder.
 
-## Images
-No photos yet; her site and Instagram had none we could pull. The crystals, mountains and logo
-mark are drawn in code. `og.png` is the link-preview image, `favicon.svg` and
-`apple-touch-icon.png` are the tab and home-screen icons. Shop and session photos from Linda would
-go well in the Shop and Meet Linda sections.
+Also to confirm with her: hours beyond "by appointment" (her site only says sessions are "offered by appointment or
+scheduled group classes"), and whether she wants her name shown.
+
+## Editing it live in TOB's website builder
+Open TOB › Create › Website builder. The site is listed as "Sound Vibration Sanctuary" (folder
+`C:\Dev\crystalscrosses-redesign`). Click any words to change them, use Swap picture or Create one on any photo, and
+change colours in Design (Lavender, Violet, Plum, Sand and the others are the named site colours). The builder saves
+into these same files (its own styles go in `builder.css`). Nothing goes online until Publish is clicked.
+
+## Tests
+`tests/test_site.py`: the rebrand is complete, her real facts and prices are on the page, unknowns are placeholders,
+the schema is valid, every picture is there with alt text and a size, and the page opens and saves cleanly in the
+website builder. Run it with TOB's Python:
+
+    C:\Users\ayala\Projects\TOB-OS\.venv\Scripts\python.exe -m pytest tests -q
