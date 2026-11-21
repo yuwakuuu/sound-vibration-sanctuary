@@ -93,6 +93,7 @@ p { margin: 0 0 1em; }
 .hero { position: relative; isolation: isolate; min-height: min(88vh, 820px); display: flex; align-items: flex-end; color: var(--white); overflow: hidden; }
 .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
 .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(34, 27, 58, .15) 0%, rgba(34, 27, 58, .35) 45%, rgba(34, 27, 58, .88) 100%); }
+@media (min-width: 900px) { .hero::before { background: linear-gradient(90deg, rgba(34, 27, 58, .78) 0%, rgba(34, 27, 58, .5) 45%, rgba(34, 27, 58, .08) 80%), linear-gradient(0deg, rgba(34, 27, 58, .4), transparent 40%); } }
 .hero-inner { padding: 120px 0 clamp(48px, 9vw, 96px); max-width: 760px; }
 .hero h1 { color: var(--white); margin-bottom: .25em; text-shadow: 0 2px 30px rgba(0, 0, 0, .25); }
 .hero .eyebrow { color: #e9e3ff; }
@@ -154,7 +155,7 @@ p { margin: 0 0 1em; }
 .steps { display: grid; gap: 20px; counter-reset: step; }
 @media (min-width: 760px) { .steps { grid-template-columns: repeat(3, 1fr); } }
 .step { position: relative; padding: 28px 26px; border-radius: var(--radius); background: var(--blush); }
-.step::before { counter-increment: step; content: counter(step); font-family: var(--font-head); font-size: 3rem; line-height: 1; color: var(--sand); display: block; margin-bottom: 10px; }
+.step::before { counter-increment: step; content: counter(step); font-family: var(--font-head); font-variant-numeric: lining-nums; font-size: 3rem; line-height: 1; color: var(--sand); display: block; margin-bottom: 10px; }
 .step h3 { font-size: 1.4rem; }
 .step p { margin: 0; color: var(--muted); }
 
@@ -162,7 +163,7 @@ p { margin: 0 0 1em; }
 .about { background: var(--white); }
 .about-img { border-radius: calc(var(--radius) + 8px); box-shadow: var(--shadow); aspect-ratio: 4 / 5; object-fit: cover; width: 100%; }
 .about-copy p { font-size: 1.1rem; }
-.signature { font-family: var(--font-head); font-size: 1.6rem; font-style: italic; color: var(--plum); margin-top: 8px; }
+.about-copy .signature { font-family: var(--font-head); font-size: 1.6rem; font-style: italic; color: var(--plum); margin-top: 8px; }
 .creds { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 12px; }
 .creds li { display: flex; gap: 12px; align-items: flex-start; }
 .creds li::before { content: ""; flex: none; width: 10px; height: 10px; margin-top: .6em; border-radius: 50%; background: var(--lavender); box-shadow: 0 0 0 5px var(--mist); }
@@ -240,3 +241,18 @@ textarea { min-height: 120px; resize: vertical; }
 .footer-base .tmp-powered { color: #d9c9df; }
 .footer-base .tmp-powered:hover { color: var(--white); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Shop and social links (from her Instagram: crystals, specimens, gifts, jewelry; shop hours Mon to Fri 11 to 2) */
+.shop-img { border-radius: calc(var(--radius) + 8px); box-shadow: var(--shadow); aspect-ratio: 4 / 3; object-fit: cover; width: 100%; }
+.shop-tags { margin: 8px 0 20px; }
+.shop-tags li { font-size: .9rem; padding: .45em 1em; }
+.nav-social { display: none; gap: 6px; }
+.nav-social a { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; color: var(--violet); }
+.nav-social a:hover { background: var(--mist); color: var(--plum); }
+.nav-social svg { width: 20px; height: 20px; }
+.social + .social { margin-left: 20px; }
+@media (min-width: 900px) {
+  .nav-social { display: flex; margin-left: auto; margin-right: 8px; }
+  .menu .menu-social { display: none; }
+}
+@media (min-width: 900px) and (max-width: 1100px) { .menu { gap: 18px; } }
