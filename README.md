@@ -41,7 +41,7 @@ headings and Quicksand for the text (Quicksand is the font her current site uses
     "212 W Superstition Blvd, #103" and "Text 480-265-6136 to RSVP". These are in `data/schedule.json` and on the page.
   - From the owner via Adrian: groups are 10 people at most; dogs come free, one dog of any size or two dogs that
     weigh 30 lb or less together; no online payment, guests pay in person and no-shows are fine; 480-265-6136 is the
-    crystal shop's phone and texting is preferred; Past Life Regressions are coming soon, done the certified QHHT
+    crystal shop's phone and texting is preferred; Past Life Regressions are coming soon, done the proper, certified QHHT
     (Quantum Healing Hypnosis Technique) way. The owner and practitioner is **Linda Huss** (her name is in the
     signature, the about section, the photo descriptions and the schema's `founder`; the fliers themselves don't
     print it).

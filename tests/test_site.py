@@ -171,7 +171,15 @@ def test_rsvp_form_takes_no_payment_and_states_the_rules():
     assert not re.search(r"cc-|card number|cvv|cvc|expir|stripe|paypal", PAGE, re.I), "no online payment"
     assert "pay in person" in PAGE.lower() and "Nothing is charged online" in PAGE
     assert "One dog of any size, or two dogs that weigh 30 lb or less together" in PAGE
-    assert "Past Life Regression" in PAGE and "QHHT (Quantum Healing Hypnosis Technique)" in PAGE
+    assert "Past Life Regression" in PAGE and "Coming soon" in PAGE
+    assert "QHHT, the Quantum Healing Hypnosis Technique developed by Dolores Cannon" in PAGE
+    assert "Linda practises it the proper, certified QHHT way" in PAGE
+    # what visitors read: no claim that Dolores Cannon taught her personally, and no medical claims or promises
+    shown = re.sub(r"<!--.*?-->", "", PAGE, flags=re.S)
+    assert not re.search(r"(trained|taught|studied) (directly |personally )?(by|with|under) Dolores", shown, re.I)
+    soon = re.search(r'<div class="soon">.*?</div>\s*<a', PAGE, re.S).group(0)
+    assert not re.search(r"\b(cure|treat|diagnos|guarantee)", re.sub(r"<!--.*?-->", "", soon, flags=re.S), re.I)
+    assert "<!-- ADRIAN: please confirm with Linda how she trained in QHHT" in soon   # the note for Adrian
     assert PAGE.index('src="script.js"') < PAGE.index('src="booking.js"')
 
 

@@ -265,8 +265,9 @@ textarea { min-height: 120px; resize: vertical; }
 .soon { margin-top: 32px; display: grid; gap: 16px; align-items: center; background: var(--white); border: 1px dashed var(--lavender); border-radius: var(--radius); padding: 24px; }
 .soon h3 { margin: 0 0 .2em; }
 .soon p { margin: 0; color: var(--muted); }
+.soon p + p { margin-top: .6em; }
 .soon-tag { justify-self: start; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--white); background: var(--violet); border-radius: 999px; padding: .45em 1em; }
-@media (min-width: 820px) { .soon { grid-template-columns: auto 1fr auto; gap: 24px; } }
+@media (min-width: 820px) { .soon { grid-template-columns: auto 1fr auto; gap: 24px; } .soon-tag { align-self: start; margin-top: .3em; } }
 .card .dog-rule { font-size: .95rem; color: var(--plum); background: var(--mist); border-radius: 12px; padding: .6em .9em; }
 
 /* Calendar & RSVP (dates and spots come from data/schedule.json) */
