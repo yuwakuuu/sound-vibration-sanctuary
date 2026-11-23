@@ -1,8 +1,8 @@
 /* Sound Vibration Sanctuary: the RSVP calendar.
    Dates, times, prices and spots come from data/schedule.json (edit that file, not this one).
    No payment is taken online: guests RSVP here and pay in person.
-   RSVPs go to a free form service (Web3Forms key or Formspree link in "form"), else an email to "email",
-   else a ready-made text message to her phone. The rules below are plain functions so tests can check them. */
+   Where RSVPs go is set in data/config.json: a free form service (Web3Forms key or Formspree link in "rsvpFormKey"),
+   else an email to "rsvpEmail", else (both empty, as now) a ready-made text message to her phone. The rules below are plain functions so tests can check them. */
 (function (root) {
   'use strict';
 
@@ -106,6 +106,18 @@
     if (!form) return null;
     if (/^https:\/\//i.test(form)) return { url: form, key: null };
     return { url: 'https://api.web3forms.com/submit', key: form };
+  };
+
+  // Where RSVPs go is set in one place, data/config.json (rsvpEmail, rsvpFormKey). Older copies of schedule.json had
+  // "email"/"form" lines; those still count when config.json leaves a value empty. Anything that isn't a real-looking
+  // address is ignored, so a note left in the field can't become a broken mailto.
+  B.settings = function (schedule, config) {
+    schedule = schedule || {}; config = config || {};
+    var email = String(config.rsvpEmail || schedule.email || '').trim();
+    return {
+      email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : '',
+      form: String(config.rsvpFormKey || schedule.form || '').trim()
+    };
   };
 
   if (typeof module !== 'undefined' && module.exports) { module.exports = B; }
@@ -363,9 +375,16 @@
     if (want && byId(want)) pick(want, false);
   }
 
-  fetch('data/schedule.json', { cache: 'no-cache' })
-    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(start)
+  var getJSON = function (url) {
+    return fetch(url, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  };
+  Promise.all([getJSON('data/schedule.json'), getJSON('data/config.json').catch(function () { return {}; })])
+    .then(function (both) {
+      var where = B.settings(both[0], both[1]);
+      both[0].email = where.email;
+      both[0].form = where.form;
+      start(both[0]);
+    })
     .catch(function () {
       var l = cal.querySelector('.cal-loading');
       if (l) l.textContent = 'The calendar didn’t load. Please text 480-265-6136 to RSVP.';

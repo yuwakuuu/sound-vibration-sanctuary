@@ -23,6 +23,7 @@ SITE = Path(__file__).resolve().parents[1]
 TOB = Path(r"C:\Users\ayala\Projects\TOB-OS")
 PAGE = (SITE / "index.html").read_text(encoding="utf-8")
 SCHEDULE = json.loads((SITE / "data" / "schedule.json").read_text(encoding="utf-8"))
+CONFIG = json.loads((SITE / "data" / "config.json").read_text(encoding="utf-8"))   # where RSVPs go (Adrian fills it)
 PHONE = "480-265-6136"   # her crystal shop's number, from her December flyer ("Text 480-265-6136 to RSVP")
 FACEBOOK = "https://www.facebook.com/Soundvibrationsanctuary/"
 INSTAGRAM = "https://www.instagram.com/soundvibrationsanctuary/"
@@ -44,7 +45,7 @@ def tags(name: str) -> list[dict]:
 
 
 def test_no_trace_of_the_old_store_is_left():
-    old = ["Crystals & Crosses", "Crystals &amp; Crosses", "Linda", "Huss", "CrystalClearChoices", "crystalsandcrosses",
+    old = ["Crystals & Crosses", "Crystals &amp; Crosses", "CrystalClearChoices", "crystalsandcrosses",
            "185 N Apache Trail", "320 W Superstition", "Marcellus", "Figtree", "#24152f",
            "tmpbizz.com/demo/crystalscrosses"]
     for f in ["index.html", "style.css", "script.js", "booking.js", "README.md"]:
@@ -79,7 +80,11 @@ def test_unknown_details_are_marked_placeholders_not_invented():
     assert len(re.findall(r'class="ph"', PAGE)) >= 5   # her name, gift cards, three reviews
     phones = set(re.findall(r"\(\d{3}\)\s*\d{3}-\d{4}|\b\d{3}-\d{3}-\d{4}\b", PAGE))
     assert phones == {PHONE}, f"only her own number: {phones}"
-    assert SCHEDULE["email"] == "" and SCHEDULE["form"] == "", "her email / form key are hers to fill in"
+    # her email isn't known yet: one clearly marked, empty setting, and no address anywhere in the data
+    assert CONFIG["rsvpEmail"] == "" and CONFIG["rsvpFormKey"] == "", "her email / form key are Adrian's to fill in"
+    assert "email" not in SCHEDULE and "form" not in SCHEDULE, "only one place says where RSVPs go"
+    for f in ["data/config.json", "data/schedule.json", "booking.js", "script.js"]:
+        assert not re.search(r"[\w.+-]+@[\w-]+\.[a-z]{2,}", (SITE / f).read_text(encoding="utf-8")), f"no address in {f}"
     assert not re.search(r"[\w.+-]+@[\w-]+\.\w+", PAGE), "no email address until she gives one"
     readme = (SITE / "README.md").read_text(encoding="utf-8")
     assert "## Placeholders to fill in" in readme
@@ -155,7 +160,7 @@ def test_group_size_is_ten_everywhere():
     for f in ["index.html", "README.md", "booking.js", "data/schedule.json"]:
         text = (SITE / f).read_text(encoding="utf-8")
         assert not re.search(r"(up to|max(imum)?|most)\s+14\b|\b14 (guests|people|participants)", text, re.I), f
-    assert "Up to 10 guests" in PAGE and "+$20 per extra guest, up to 10" in PAGE
+    assert "Up to 10 guests" in PAGE and "+$20 per additional person, up to 10" in PAGE
     assert all(s["capacity"] <= 10 for s in SCHEDULE["sessions"])
 
 
@@ -229,6 +234,38 @@ def test_rsvps_go_to_a_free_form_service_or_fall_back_to_a_text():
     assert booking("B.smsLink('480-265-6136', 'Hi there')") == "sms:+14802656136?&body=Hi%20there"
 
 
+def test_rsvp_destination_comes_from_the_one_config_setting():
+    assert booking("B.settings({}, {})") == {"email": "", "form": ""}
+    assert booking("B.settings({}, {rsvpEmail: ' her@example.com '})") == {"email": "her@example.com", "form": ""}
+    assert booking("B.settings({}, {rsvpFormKey: 'abc-123'})") == {"email": "", "form": "abc-123"}
+    assert booking("B.settings({email: 'old@example.com', form: 'k'}, {rsvpEmail: '', rsvpFormKey: ''})") == {
+        "email": "old@example.com", "form": "k"}, "an older schedule.json with email/form still works"
+    assert booking("B.settings({email: 'old@example.com'}, {rsvpEmail: 'new@example.com'})")["email"] == "new@example.com"
+    assert booking("B.settings({}, {rsvpEmail: 'PUT HER EMAIL HERE'})")["email"] == "", "a note is not an address"
+
+
+def test_her_wellness_rates_flier():
+    """Her flier "Wellness Rates & Offerings" (updated January 2026): services, prices, wording, rules, care note."""
+    for name, price in [("Group sound meditation", "$20"), ("Private sound healing", "$80"),
+                        ("Sound meditation with your dog", "$30"), ("On-body Tibetan bowl vibration", "$100"),
+                        ("Chakra reading &amp; balancing", "$100"), ("Oracle card reading", "$35")]:
+        assert re.search(re.escape(name) + r".{0,120}?" + re.escape(price), PAGE, re.S), name
+    for words in ["tailored to your intentions", "Dogs must be leashed and non-reactive",
+                  "Proceeds are donated to local animal rescues", "a sense of energetic alignment and inner harmony",
+                  "Insightful oracle card readings offering guidance, reflection, and intuitive clarity",
+                  "exploring crystal properties, energetic awareness, and intention setting. $20 per person",
+                  "Rates subject to change", "not a substitute for medical or mental health care",
+                  "Certified Crystal Practitioner and Sound Healing Practitioner, by appointment and in scheduled classes"]:
+        assert words in PAGE, words
+    assert "up to 14" not in PAGE, "her flier still says 14 for private groups; the owner has since made it 10"
+
+
+def test_her_name_is_on_the_page():
+    assert "With love, Linda Huss" in PAGE and "Facilitated by Linda Huss" in PAGE
+    m = re.search(r'<script type="application/ld\+json">(.*?)</script>', PAGE, re.S)
+    assert json.loads(m.group(1))["founder"]["name"] == "Linda Huss"
+
+
 def test_page_basics_for_seo_and_accessibility():
     assert '<html lang="en">' in PAGE and 'name="viewport"' in PAGE and 'name="description"' in PAGE
     assert 'rel="canonical"' in PAGE and 'property="og:image"' in PAGE
@@ -282,11 +319,11 @@ def test_a_live_edit_in_the_builder_lands_as_a_small_exact_change(builder):
     page = api.page(s["key"], "index.html")
     pm = api.sessions[page["rev"]].pm
     h1 = [e for e in pm.els if e.tag == "h1"][0]
-    name = [e for e in pm.els if e.tag == "span" and pm.inner(e.id) == "your name"][0]
+    name = [e for e in pm.els if e.tag == "span" and pm.inner(e.id) == "Gift card amounts and how to buy them"][0]
     res = api.save({"site": s["key"], "rev": page["rev"], "removed": [],
                     "patches": [[h1.id, f"\x01S{h1.id}\x02Find Your Calm</h1>"],
-                                [name.id, f"\x01S{name.id}\x02Her Name</span>"]]})
+                                [name.id, f"\x01S{name.id}\x02$25 and $50, at the shop</span>"]]})
     assert res["ok"] and res["wrote"] == ["index.html"]
     text = (site / "index.html").read_text(encoding="utf-8")
     assert text == PAGE.replace(">Discover Inner Peace</h1>", ">Find Your Calm</h1>").replace(
-        '<span class="ph">your name</span>', '<span class="ph">Her Name</span>')
+        '<span class="ph">Gift card amounts and how to buy them</span>', '<span class="ph">$25 and $50, at the shop</span>')

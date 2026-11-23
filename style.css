@@ -365,3 +365,11 @@ button.cal-day.is-picked i { background: var(--white); }
   .gallery-grid img { grid-column: span 2; }
   .gallery-grid .wide, .gallery-grid .wide + img { grid-column: span 3; }
 }
+
+/* From her "Wellness Rates & Offerings" flier: dotted leaders between a service and its price, and her care note */
+.card-top h3 { flex: 1; }
+.card-top h3 { display: flex; align-items: baseline; }
+.card-top h3::after, .class-item h3::after { content: ""; flex: 1 0 1.2em; margin: 0 .2em 0 .45em; border-bottom: 2px dotted var(--lavender); opacity: .7; transform: translateY(-.25em); }
+.class-item h3 { justify-content: flex-start; }
+.class-item h3 .price { order: 2; }
+.care-note { max-width: 46em; margin: 12px auto 0; text-align: center; color: var(--muted); font-size: .9rem; font-style: italic; }

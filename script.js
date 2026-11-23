@@ -28,13 +28,16 @@
   });
 
   // Forms: they open an email to the sanctuary once its address is set, either in data-email on the <form> or once
-  // for the whole site as "email" in data/schedule.json (the same line the RSVP calendar uses).
+  // for the whole site as "rsvpEmail" in data/config.json (the same setting the RSVP calendar uses).
   // Until then they say so plainly and point to her phone (texting is best), so no message is ever silently lost.
   var siteEmail = '';
   if (window.fetch) {
-    fetch('data/schedule.json', { cache: 'no-cache' })
+    fetch('data/config.json', { cache: 'no-cache' })
       .then(function (r) { return r.json(); })
-      .then(function (j) { siteEmail = String(j.email || '').trim(); })
+      .then(function (j) {
+        var e = String(j.rsvpEmail || '').trim();
+        siteEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) ? e : '';
+      })
       .catch(function () {});
   }
   function status(form, text) { var s = form.querySelector('.form-status'); if (s) s.textContent = text; }

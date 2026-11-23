@@ -1,0 +1,11 @@
+{
+  "_README": [
+    "WHERE RSVPs AND MESSAGES GO. This is the only place to set it. Fill in, push, done.",
+    "rsvpEmail: Linda's email address (not known yet, so it is empty). The RSVP form, the Get in touch form and the mailing list form open the visitor's email app addressed to it, with everything filled in.",
+    "rsvpFormKey: optional. A free Web3Forms access key (web3forms.com) or a Formspree form link (https://formspree.io/f/...). When set, RSVPs go straight to her inbox without the visitor's email app, and rsvpEmail becomes the backup.",
+    "While both are empty (as now), the RSVP form still works: it offers the visitor a ready-made text message to 480-265-6136 with the RSVP in it.",
+    "Only ever put her real address or key here, never a made-up one."
+  ],
+  "rsvpEmail": "",
+  "rsvpFormKey": ""
+}

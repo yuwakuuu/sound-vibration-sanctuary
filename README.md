@@ -6,7 +6,8 @@ canonical link already point at that address. (The folder keeps its old name so 
 
 Plain HTML, CSS and JavaScript with no build step: `index.html`, `style.css` (colours at the top as named
 variables), `script.js` (menu, forms, the singing bowl tone), `booking.js` (the RSVP calendar) and
-`data/schedule.json` (the dates, times, prices and spots the calendar shows). Fonts load from Google Fonts: Cormorant Garamond for
+`data/schedule.json` (the dates, times, prices and spots the calendar shows) and `data/config.json` (where RSVPs and
+messages are sent). Fonts load from Google Fonts: Cormorant Garamond for
 headings and Quicksand for the text (Quicksand is the font her current site uses). Both are SIL Open Font License.
 
 ## Where the content came from
@@ -41,7 +42,16 @@ headings and Quicksand for the text (Quicksand is the font her current site uses
   - From the owner via Adrian: groups are 10 people at most; dogs come free, one dog of any size or two dogs that
     weigh 30 lb or less together; no online payment, guests pay in person and no-shows are fine; 480-265-6136 is the
     crystal shop's phone and texting is preferred; Past Life Regressions are coming soon, done the certified QHHT
-    (Quantum Healing Hypnosis Technique) way.
+    (Quantum Healing Hypnosis Technique) way. The owner and practitioner is **Linda Huss** (her name is in the
+    signature, the about section, the photo descriptions and the schema's `founder`; the fliers themselves don't
+    print it).
+  - `Flier.jpg`, her "Wellness Rates & Offerings" flier (updated January 2026), used as the reference for the
+    sessions: the same prices; her wording for each service; "Dogs must be leashed and non-reactive"; "Proceeds are
+    donated to local animal rescues"; crystal classes $20 per person; "Facilitated by a Certified Crystal
+    Practitioner and Sound Healing Practitioner by Appointment and Scheduled Classes"; "Rates subject to change"; and
+    her note that the services "are not a substitute for medical or mental health care" (under the sessions and in
+    the footer). Its dotted price leaders are echoed on the session cards and classes. It still lists private groups
+    of fourteen; the owner has since made every group 10, so the site says 10.
 - **Made on this PC**: the dog and oracle card photos are still stand-ins from TOB's image generator (she had no
   photos of those yet). Swap them in the builder when she has her own.
 
@@ -60,30 +70,34 @@ Sundays). They pick a session and RSVP with their name, email, phone, number of 
 weights) and notes. The form checks the group size, the spots left and the dog rule before sending. Nothing is paid
 online: the form shows the total to pay in person.
 
-**Everything is in `data/schedule.json`.** Edit it in Notepad or on GitHub and the site updates after the push:
+**The dates are in `data/schedule.json`.** Edit it in Notepad or on GitHub and the site updates after the push:
 - one line per session: `date`, `start`/`end` (24-hour Arizona time), `title`, `price` per person, `capacity`,
   `booked`, and for dog sessions `dogs: true`, `dogCapacity` and `dogsBooked`;
 - as RSVPs come in, raise `booked` (and `dogsBooked`) so the site shows the right number of spots left. A static
   site can't count them by itself. Setting `booked` to `capacity` closes a session; past sessions hide themselves;
-- `form`: where RSVPs are sent. Paste a free **Web3Forms access key** (web3forms.com: enter her email, the key
-  arrives by email) or a **Formspree form link** (`https://formspree.io/f/...`). RSVPs then arrive in her inbox;
-- `email`: her email address. Used when `form` is empty or doesn't answer: the visitor's email app opens with the
-  RSVP filled in. The "Get in touch" and mailing list forms use it too (or `data-email` on those forms, as before);
-- with neither set (as now), the RSVP opens a text message to 480-265-6136 with everything filled in, matching
-  her flyer ("Text 480-265-6136 to RSVP").
+
+**Where RSVPs go is set in one place: `data/config.json`** (both values are empty until Adrian has them; never put
+a made-up address there):
+- `rsvpEmail`: Linda's email address. The RSVP form opens the visitor's email app addressed to her with the RSVP
+  filled in (mailto). The "Get in touch" and mailing list forms use it too (a `data-email` on those forms, as
+  before, still takes priority);
+- `rsvpFormKey` (optional): a free **Web3Forms access key** (web3forms.com: enter her email, the key arrives by
+  email) or a **Formspree form link** (`https://formspree.io/f/...`). RSVPs then go straight to her inbox, and
+  `rsvpEmail` is the backup if the service doesn't answer;
+- with neither set (as now), the RSVP form still works: it offers a ready-made text message to 480-265-6136 with
+  everything filled in, matching her flyer ("Text 480-265-6136 to RSVP"). The other forms ask visitors to text.
 
 ## Placeholders to fill in
 These are shown with a dotted lavender underline (class `ph`) so they're easy to spot and click in the builder.
 They aren't on her site or Facebook, so nothing was made up:
-1. **Her name** under the story ("With love, your name").
-2. **Gift cards**: the amounts and how to buy them.
-3. **Reviews**: three quotes and guest names (real ones from Facebook or clients, with their OK).
-4. **Her email / form key** in `data/schedule.json` (see above). Until then the forms point visitors to her phone.
-5. **Prices of the Spiritual Wellness 101 classes** and the days of the two $20 crystal classes: not on her poster
+1. **Gift cards**: the amounts and how to buy them.
+2. **Reviews**: three quotes and guest names (real ones from Facebook or clients, with their OK).
+3. **Her email / form key** in `data/config.json` (see above). Until then the forms point visitors to her phone.
+4. **Prices of the Spiritual Wellness 101 classes** and the days of the two $20 crystal classes: not on her poster
    or price list, so they aren't on the page.
 
 Also to confirm with her: the shop hours (Mon to Fri, 11 am to 2 pm, from her Instagram bio) are still right,
-whether she'd like the shop to list products or prices, and whether she wants her name shown.
+and whether she'd like the shop to list products or prices.
 
 ## Editing it live in TOB's website builder
 Open TOB › Create › Website builder. The site is listed as "Sound Vibration Sanctuary" (folder

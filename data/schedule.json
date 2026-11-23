@@ -1,16 +1,13 @@
 {
   "_howTo": [
     "This file is the RSVP calendar. Edit it in any text editor (or on GitHub) and the website updates; nothing else to change.",
-    "form: paste a Web3Forms access key (free, web3forms.com) OR a Formspree form link like https://formspree.io/f/abcdwxyz. RSVPs then arrive by email.",
-    "email: her email address. Used only if the form above is empty or not reachable: the visitor's email app opens with the RSVP filled in.",
+    "Where RSVPs are sent (her email or a form key) is NOT in this file: it is set in data/config.json.",
     "phone: shown everywhere for texting an RSVP (texting is preferred).",
     "sessions: one line per session. date is YYYY-MM-DD, start/end are 24-hour Arizona time, price is per person in dollars.",
     "capacity = most people; booked = people already RSVP'd (raise it as RSVPs come in, so the site shows the spots left).",
     "dogs: true lets guests bring dogs; dogCapacity = most dogs; dogsBooked = dogs already RSVP'd.",
     "To close a session, set booked to the same number as capacity. To remove one, delete its line."
   ],
-  "form": "",
-  "email": "",
   "phone": "480-265-6136",
   "sessions": [
     {"id": "2026-12-04-evening", "date": "2026-12-04", "start": "18:00", "end": "19:00", "title": "Group Sound Meditation", "price": 20, "capacity": 10, "booked": 0, "dogs": false},
