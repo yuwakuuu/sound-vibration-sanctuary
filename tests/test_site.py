@@ -1,5 +1,6 @@
-"""Checks for the Sound Vibration Sanctuary site: the rebrand is complete, the facts match her own site, nothing is
-invented, every picture is there, and the page opens and saves cleanly in TOB's website builder.
+"""Checks for the Sound Vibration Sanctuary site: the rebrand is complete, the facts match her own site, her flyer and
+schedule, nothing is invented, every picture is there, the RSVP calendar's rules hold (group size, dogs, no online
+payment), and the page opens and saves cleanly in TOB's website builder.
 
 Run with TOB's Python (the builder checks need ``tob.sitebuilder``; they're skipped without it):
 
@@ -11,6 +12,7 @@ from __future__ import annotations
 import json
 import re
 import shutil
+import subprocess
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -20,6 +22,8 @@ import pytest
 SITE = Path(__file__).resolve().parents[1]
 TOB = Path(r"C:\Users\ayala\Projects\TOB-OS")
 PAGE = (SITE / "index.html").read_text(encoding="utf-8")
+SCHEDULE = json.loads((SITE / "data" / "schedule.json").read_text(encoding="utf-8"))
+PHONE = "480-265-6136"   # her crystal shop's number, from her December flyer ("Text 480-265-6136 to RSVP")
 FACEBOOK = "https://www.facebook.com/Soundvibrationsanctuary/"
 INSTAGRAM = "https://www.instagram.com/soundvibrationsanctuary/"
 
@@ -41,9 +45,9 @@ def tags(name: str) -> list[dict]:
 
 def test_no_trace_of_the_old_store_is_left():
     old = ["Crystals & Crosses", "Crystals &amp; Crosses", "Linda", "Huss", "CrystalClearChoices", "crystalsandcrosses",
-           "185 N Apache Trail", "320 W Superstition", "480-265-6136", "Marcellus", "Figtree", "#24152f",
+           "185 N Apache Trail", "320 W Superstition", "Marcellus", "Figtree", "#24152f",
            "tmpbizz.com/demo/crystalscrosses"]
-    for f in ["index.html", "style.css", "script.js", "favicon.svg", "README.md"]:
+    for f in ["index.html", "style.css", "script.js", "booking.js", "README.md"]:
         text = (SITE / f).read_text(encoding="utf-8")
         found = [w for w in old if w.lower() in text.lower()]
         assert not found, f"{f} still mentions {found}"
@@ -52,7 +56,8 @@ def test_no_trace_of_the_old_store_is_left():
 def test_her_real_details_are_on_the_page():
     assert "<title>Sound Vibration Sanctuary" in PAGE
     assert "Discover Inner Peace" in PAGE
-    assert "212 W Superstition Blvd" in PAGE and "Apache Junction, AZ" in PAGE
+    assert "212 W Superstition Blvd, Suite 103" in PAGE and "Apache Junction, AZ" in PAGE
+    assert PHONE in PAGE and 'href="sms:+14802656136"' in PAGE and "texting is best" in PAGE
     assert "a peaceful environment where sound and vibration support relaxation, clarity, and well-being" in PAGE.lower()
     assert "Hibiscus Moon Academy" in PAGE
     assert PAGE.count(FACEBOOK) >= 2
@@ -71,8 +76,10 @@ def test_her_real_details_are_on_the_page():
 
 
 def test_unknown_details_are_marked_placeholders_not_invented():
-    assert len(re.findall(r'class="ph"', PAGE)) >= 10
-    assert not re.search(r"\(\d{3}\)\s*\d{3}-\d{4}|\b\d{3}-\d{3}-\d{4}\b", PAGE), "no phone number until she gives one"
+    assert len(re.findall(r'class="ph"', PAGE)) >= 5   # her name, gift cards, three reviews
+    phones = set(re.findall(r"\(\d{3}\)\s*\d{3}-\d{4}|\b\d{3}-\d{3}-\d{4}\b", PAGE))
+    assert phones == {PHONE}, f"only her own number: {phones}"
+    assert SCHEDULE["email"] == "" and SCHEDULE["form"] == "", "her email / form key are hers to fill in"
     assert not re.search(r"[\w.+-]+@[\w-]+\.\w+", PAGE), "no email address until she gives one"
     readme = (SITE / "README.md").read_text(encoding="utf-8")
     assert "## Placeholders to fill in" in readme
@@ -82,13 +89,15 @@ def test_local_business_schema_is_valid_and_honest():
     m = re.search(r'<script type="application/ld\+json">(.*?)</script>', PAGE, re.S)
     data = json.loads(m.group(1))
     assert data["@type"] == "HealthAndBeautyBusiness" and data["name"] == "Sound Vibration Sanctuary"
-    assert data["address"]["streetAddress"] == "212 W Superstition Blvd"
+    assert data["address"]["streetAddress"] == "212 W Superstition Blvd, Suite 103"
+    assert data["telephone"] == "+1-480-265-6136"
     assert data["address"]["addressLocality"] == "Apache Junction" and data["address"]["addressRegion"] == "AZ"
     assert FACEBOOK in data["sameAs"] and INSTAGRAM in data["sameAs"]
     hours = data["openingHoursSpecification"][0]
     assert hours["dayOfWeek"] == ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     assert (hours["opens"], hours["closes"]) == ("11:00", "14:00")
-    assert "telephone" not in data and "aggregateRating" not in data and "review" not in data
+    assert "aggregateRating" not in data and "review" not in data
+    assert "up to 10 participants" in json.dumps(data)
     assert len(data["hasOfferCatalog"]["itemListElement"]) == 8
 
 
@@ -101,8 +110,123 @@ def test_every_picture_is_there_with_alt_text_and_a_size():
         assert a.get("alt"), f"{src} needs alt text"
         assert a.get("width") and a.get("height"), f"{src} needs width and height"
         assert "srcset" not in a, "srcset would stop the builder's Swap picture from showing"
-    for f in ["favicon.svg", "apple-touch-icon.png", "og.png", "style.css", "script.js"]:
+    for f in ["favicon-32.png", "favicon-192.png", "apple-touch-icon.png", "og.jpg", "images/logo.png", "style.css",
+              "script.js", "booking.js"]:
         assert (SITE / f).is_file()
+    for ref in re.findall(r'(?:href|content)="(?:https://soundvibrationsanctuary\.com/)?([\w/-]+\.(?:png|jpg|webp|svg))"', PAGE):
+        assert (SITE / ref).is_file(), f"missing {ref}"
+
+
+def test_her_photos_are_used():
+    imgs = tags("img")
+    srcs = {a["src"] for a in imgs}
+    # the logo in the header and the footer
+    assert sum(1 for a in imgs if a["src"] == "images/logo.png") == 2
+    # the crystals section: every stone she named, with its name shown
+    for stone in ["Aquamarine", "Celestite", "Fluorite", "Garnet", "Herkimer Diamonds", "Quartz crystals", "Rhodochrosite"]:
+        slug = stone.lower().replace(" ", "-")
+        assert f"images/crystals/{slug}.webp" in srcs and f"<figcaption>{stone}</figcaption>" in PAGE
+    # the shop shelves, the treatment room and the sound room
+    for f in ["shop-shelves-1", "shop-shelves-2", "shop-shelves-3", "shop-shelves-4", "shop-shelves-5", "treatment-room",
+              "crystal-layout-table", "sound-bath-room", "sound-room-bowls-gongs", "practitioner-gongs"]:
+        assert f"images/{f}.webp" in srcs, f
+    for a in imgs:
+        assert max(int(a["width"]), int(a["height"])) <= 1600, f"{a['src']} should be 1600px or less"
+
+
+# ------------------------------------------------------------------------------------- her December schedule & RSVPs
+def test_december_schedule_matches_her_flyer():
+    got = [(s["date"], s["start"], s["end"], s["price"], s["capacity"], s["dogs"], s.get("dogCapacity"))
+           for s in SCHEDULE["sessions"]]
+    assert got == [
+        ("2026-12-04", "18:00", "19:00", 20, 10, False, None),
+        ("2026-12-06", "12:30", "13:30", 30, 8, True, 4),
+        ("2026-12-11", "18:00", "19:00", 20, 10, False, None),
+        ("2026-12-13", "12:30", "13:30", 30, 8, True, 4),
+        ("2026-12-18", "18:00", "19:00", 20, 10, False, None),
+    ]
+    assert SCHEDULE["phone"] == PHONE
+    assert len({s["id"] for s in SCHEDULE["sessions"]}) == len(SCHEDULE["sessions"])
+    assert "December Sound Meditation" in PAGE and "An hour with singing bowls and gongs" in PAGE
+    assert "8 people &amp; 4 dogs max" in PAGE
+
+
+def test_group_size_is_ten_everywhere():
+    for f in ["index.html", "README.md", "booking.js", "data/schedule.json"]:
+        text = (SITE / f).read_text(encoding="utf-8")
+        assert not re.search(r"(up to|max(imum)?|most)\s+14\b|\b14 (guests|people|participants)", text, re.I), f
+    assert "Up to 10 guests" in PAGE and "+$20 per extra guest, up to 10" in PAGE
+    assert all(s["capacity"] <= 10 for s in SCHEDULE["sessions"])
+
+
+def test_rsvp_form_takes_no_payment_and_states_the_rules():
+    form = re.search(r'<form class="form" id="rsvp-form".*?</form>', PAGE, re.S).group(0)
+    for name in ["slot", "name", "email", "phone", "people", "dogs", "dog1", "dog2", "notes"]:
+        assert f'name="{name}"' in form, name
+    assert not re.search(r"cc-|card number|cvv|cvc|expir|stripe|paypal", PAGE, re.I), "no online payment"
+    assert "pay in person" in PAGE.lower() and "Nothing is charged online" in PAGE
+    assert "One dog of any size, or two dogs that weigh 30 lb or less together" in PAGE
+    assert "Past Life Regression" in PAGE and "QHHT (Quantum Healing Hypnosis Technique)" in PAGE
+    assert PAGE.index('src="script.js"') < PAGE.index('src="booking.js"')
+
+
+NODE = shutil.which("node")
+
+
+def booking(js: str):
+    """Runs an expression against booking.js (its rules are plain functions) and returns the result."""
+    if not NODE:
+        pytest.skip("Node.js isn't on this PC")
+    src = (SITE / "booking.js").as_posix()
+    out = subprocess.run([NODE, "-e", f"const B = require({json.dumps(src)}); console.log(JSON.stringify({js}));"],
+                         capture_output=True, text=True, check=True)
+    return json.loads(out.stdout)
+
+
+def test_the_dog_rule():
+    assert booking("B.dogRule(0, [])") == ""
+    assert booking("B.dogRule(1, ['85'])") == "", "one dog of any weight"
+    assert booking("B.dogRule(1, [])") == ""
+    assert booking("B.dogRule(2, ['12', '18'])") == "", "two dogs at 30 lb together are fine"
+    assert "30 lb" in booking("B.dogRule(2, ['12', '18.5'])")
+    assert "weights" in booking("B.dogRule(2, ['12', ''])")
+    assert booking("B.dogRule(3, ['5', '5'])")
+
+
+def test_an_rsvp_is_checked_against_the_session():
+    sunday = json.dumps(SCHEDULE["sessions"][1])
+    friday = json.dumps(SCHEDULE["sessions"][0])
+    now = "Date.UTC(2026, 10, 23)"
+    ok = "{name: 'Ann', email: 'ann@example.com', phone: '480 555 0100', people: 2, dogs: 0, now: %s}" % now
+
+    def fields(s, r):
+        return [e["field"] for e in booking(f"B.check({s}, {r})")]
+
+    assert fields(sunday, ok) == []
+    assert fields(sunday, ok.replace("dogs: 0", "dogs: 2, dogWeights: ['10', '15']")) == []
+    assert fields(sunday, ok.replace("dogs: 0", "dogs: 2, dogWeights: ['20', '15']")) == ["dogs"]
+    assert fields(sunday, ok.replace("dogs: 0", "dogs: 1, dogWeights: ['90']")) == [], "one dog of any size"
+    assert fields(friday, ok.replace("dogs: 0", "dogs: 1")) == ["dogs"], "Fridays are people only"
+    assert fields(sunday, ok.replace("people: 2", "people: 9")) == ["people"], "Sundays: 8 people max"
+    assert fields(friday, ok.replace("people: 2", "people: 11")) == ["people"], "10 people max"
+    assert fields(friday, ok.replace("people: 2", "people: 10")) == []
+    nearly = json.dumps({**SCHEDULE["sessions"][1], "booked": 7, "dogsBooked": 3})
+    assert fields(nearly, ok.replace("people: 2", "people: 1").replace("dogs: 0", "dogs: 2, dogWeights: ['5', '5']")) == ["dogs"]
+    assert fields(nearly, ok) == ["people"], "only 1 of 8 spots left"
+    full = json.dumps({**SCHEDULE["sessions"][0], "booked": 10})
+    assert fields(full, ok.replace("people: 2", "people: 1")) == ["slot"]
+    assert fields(friday, ok.replace(now, "Date.UTC(2026, 11, 31)")) == ["slot"], "past sessions can't be booked"
+    assert set(fields(friday, "{name: '', email: 'x', phone: '12', people: 1, dogs: 0, now: %s}" % now)) == {
+        "name", "email", "phone"}
+    assert booking("B.spotsLeft({capacity: 10, booked: 3})") == 7
+    assert booking(f"B.total({sunday}, 3)") == 90
+
+
+def test_rsvps_go_to_a_free_form_service_or_fall_back_to_a_text():
+    assert booking("B.endpoint('')") is None
+    assert booking("B.endpoint('abcd-1234')") == {"url": "https://api.web3forms.com/submit", "key": "abcd-1234"}
+    assert booking("B.endpoint('https://formspree.io/f/xyz')") == {"url": "https://formspree.io/f/xyz", "key": None}
+    assert booking("B.smsLink('480-265-6136', 'Hi there')") == "sms:+14802656136?&body=Hi%20there"
 
 
 def test_page_basics_for_seo_and_accessibility():
@@ -158,11 +282,11 @@ def test_a_live_edit_in_the_builder_lands_as_a_small_exact_change(builder):
     page = api.page(s["key"], "index.html")
     pm = api.sessions[page["rev"]].pm
     h1 = [e for e in pm.els if e.tag == "h1"][0]
-    phone = [e for e in pm.els if e.tag == "span" and pm.inner(e.id) == "Phone number"][0]
+    name = [e for e in pm.els if e.tag == "span" and pm.inner(e.id) == "your name"][0]
     res = api.save({"site": s["key"], "rev": page["rev"], "removed": [],
                     "patches": [[h1.id, f"\x01S{h1.id}\x02Find Your Calm</h1>"],
-                                [phone.id, f"\x01S{phone.id}\x02(480) 555-0100</span>"]]})
+                                [name.id, f"\x01S{name.id}\x02Her Name</span>"]]})
     assert res["ok"] and res["wrote"] == ["index.html"]
     text = (site / "index.html").read_text(encoding="utf-8")
     assert text == PAGE.replace(">Discover Inner Peace</h1>", ">Find Your Calm</h1>").replace(
-        '<span class="ph">Phone number</span>', '<span class="ph">(480) 555-0100</span>')
+        '<span class="ph">your name</span>', '<span class="ph">Her Name</span>')

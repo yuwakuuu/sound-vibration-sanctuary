@@ -1,17 +1,19 @@
 # Sound Vibration Sanctuary: website
 
 One-page site for Sound Vibration Sanctuary, sound healing and crystal work at 212 W Superstition Blvd,
-Apache Junction, AZ. It replaces her GoDaddy site (soundvibrationsanctuary.com), and the share tags and
+Suite 103, Apache Junction, AZ. It replaces her GoDaddy site (soundvibrationsanctuary.com), and the share tags and
 canonical link already point at that address. (The folder keeps its old name so TOB's jobs and links still find it.)
 
 Plain HTML, CSS and JavaScript with no build step: `index.html`, `style.css` (colours at the top as named
-variables), `script.js` (menu, forms, the singing bowl tone). Fonts load from Google Fonts: Cormorant Garamond for
+variables), `script.js` (menu, forms, the singing bowl tone), `booking.js` (the RSVP calendar) and
+`data/schedule.json` (the dates, times, prices and spots the calendar shows). Fonts load from Google Fonts: Cormorant Garamond for
 headings and Quicksand for the text (Quicksand is the font her current site uses). Both are SIL Open Font License.
 
 ## Where the content came from
 - **Her website** (home page and `/list`, fetched 2026-11-21): the name, the address, the tagline "Discover Inner
   Peace", the "Our Story" text (used word for word), the mailing list line, and the full menu and price list with her
-  descriptions: group sound meditation $20, private session (1 to 4 people) $80 plus $20 per extra guest up to 14,
+  descriptions: group sound meditation $20, private session (1 to 4 people) $80 plus $20 per extra guest (her site said fourteen;
+  she has since lowered every group to **10**),
   sound meditation with your dog $30, on-body Tibetan bowl vibration $100, chakra reading and balancing $100, oracle
   card reading (Kyle Gray decks) $35, and two crystal classes at $20. It also gave her credentials (Sound Healing
   Practitioner, Certified Crystal Practitioner from Hibiscus Moon Academy) and her brand lavender `#8577b8`.
@@ -22,33 +24,63 @@ headings and Quicksand for the text (Quicksand is the font her current site uses
   linked in the header (icon), the mobile menu, the reviews note, the shop, the contact area and the footer.
 - **Facebook** (facebook.com/Soundvibrationsanctuary): Facebook only let us see the page name and town, so no posts,
   photos, hours or phone number came from there. It's linked next to Instagram everywhere.
-- **Photos**: all made on this PC with TOB's image generator (`python -m tob.creator.imagegen`, Z-Image Turbo).
-  They are not stock and have no words in them. They are in `images/` as WebP. `og.png` is the link preview and
-  `favicon.svg` / `apple-touch-icon.png` are the icons (sound ripples on deep plum).
+- **Her own photos and notes** (`OneDrive\Pictures\SVS`, 2026-11-23; the originals are untouched, copies were
+  resized to 1600px at most and saved as WebP):
+  - `logo.jpg`, her tree-of-life logo: `images/logo.png` (header and footer), `favicon-32.png`, `favicon-192.png`,
+    `apple-touch-icon.png`.
+  - The seven stones named by file (Aquamarine, Celestite, Fluorite, Garnet, Herkimer Diamonds, Quartz crystals,
+    Rhodochrosite): `images/crystals/`, shown in the "Crystals in the shop" section.
+  - IMG_3255 to IMG_3492 and IMG_3521/3522: the sound room, the treatment room, the crystal layout table, her with
+    the bowls and gongs, and the shop shelves (`images/shop-shelves-1..5.webp`, `treatment-room.webp` and the others).
+    `og.jpg` (the link preview) is cut from the sound room photo. IMG_3486 is her Spiritual Wellness 101 Series
+    poster (Wednesdays 6:30 to 8 pm, Nov 4 to Dec 30): shown as a picture, and its remaining dates are listed.
+  - IMG_3539 (her December schedule) and IMG_3547 (her flyer "December Sound Meditation: An hour with singing bowls
+    and gongs"): Group Sound Meditation on Fridays Dec 4, 11 and 18, 6 to 7 pm, $20, no dogs; Group Sound
+    Meditation with Your Dog on Sundays Dec 6 and 13, 12:30 to 1:30 pm, $30 per person, 8 people and 4 dogs max;
+    "212 W Superstition Blvd, #103" and "Text 480-265-6136 to RSVP". These are in `data/schedule.json` and on the page.
+  - From the owner via Adrian: groups are 10 people at most; dogs come free, one dog of any size or two dogs that
+    weigh 30 lb or less together; no online payment, guests pay in person and no-shows are fine; 480-265-6136 is the
+    crystal shop's phone and texting is preferred; Past Life Regressions are coming soon, done the certified QHHT
+    (Quantum Healing Hypnosis Technique) way.
+- **Made on this PC**: the dog and oracle card photos are still stand-ins from TOB's image generator (she had no
+  photos of those yet). Swap them in the builder when she has her own.
 
 ## On the page
-Header with a Book button, a hero with "Hear a singing bowl" (a soft bowl tone made in the browser, only when
+Header with her logo and an RSVP button, a hero with "Hear a singing bowl" (a soft bowl tone made in the browser, only when
 clicked), a welcome quote and three pillars, sessions and prices (each "Book this" picks that session in the form),
-crystal classes and upcoming events, the shop (crystals, specimens, gifts, jewelry) with its hours, what to expect, her story with her credentials, a gallery, gift cards, a reviews
-area, hours and location with a map and directions, a booking form, a mailing list signup, Instagram and Facebook links, and a
+a "coming soon" note for Past Life Regression (QHHT), the December calendar and RSVP form, crystal classes and
+the Spiritual Wellness 101 dates, the crystals in the shop, the shop (crystals, specimens, gifts, jewelry) with its hours, what to expect, her story with her credentials, a gallery, gift cards, a reviews
+area, hours, phone and location with a map and directions, a message form, a mailing list signup, Instagram and Facebook links, and a
 footer with the TMP credit. It has LocalBusiness schema (HealthAndBeautyBusiness, with her real prices as offers),
 share tags, labelled forms, a skip link, visible focus, support for reduced motion, and it is mobile-first.
+
+## The RSVP calendar (December sound meditations)
+Visitors see the month, the sessions on each day, and the spots left out of the capacity (and the dog spots on
+Sundays). They pick a session and RSVP with their name, email, phone, number of people, dogs (none, 1 or 2, with
+weights) and notes. The form checks the group size, the spots left and the dog rule before sending. Nothing is paid
+online: the form shows the total to pay in person.
+
+**Everything is in `data/schedule.json`.** Edit it in Notepad or on GitHub and the site updates after the push:
+- one line per session: `date`, `start`/`end` (24-hour Arizona time), `title`, `price` per person, `capacity`,
+  `booked`, and for dog sessions `dogs: true`, `dogCapacity` and `dogsBooked`;
+- as RSVPs come in, raise `booked` (and `dogsBooked`) so the site shows the right number of spots left. A static
+  site can't count them by itself. Setting `booked` to `capacity` closes a session; past sessions hide themselves;
+- `form`: where RSVPs are sent. Paste a free **Web3Forms access key** (web3forms.com: enter her email, the key
+  arrives by email) or a **Formspree form link** (`https://formspree.io/f/...`). RSVPs then arrive in her inbox;
+- `email`: her email address. Used when `form` is empty or doesn't answer: the visitor's email app opens with the
+  RSVP filled in. The "Get in touch" and mailing list forms use it too (or `data-email` on those forms, as before);
+- with neither set (as now), the RSVP opens a text message to 480-265-6136 with everything filled in, matching
+  her flyer ("Text 480-265-6136 to RSVP").
 
 ## Placeholders to fill in
 These are shown with a dotted lavender underline (class `ph`) so they're easy to spot and click in the builder.
 They aren't on her site or Facebook, so nothing was made up:
 1. **Her name** under the story ("With love, your name").
-2. **Phone number** (Visit section). Once she gives it, also add `"telephone"` to the schema in `<head>`.
-3. **Class days and times**: the group sound meditation and crystal class rows in Hours.
-4. **Upcoming events**: three dates and times (group sound meditation, with your dog, crystal grids).
-5. **Gift cards**: the amounts and how to buy them.
-6. **Reviews**: three quotes and guest names (real ones from Facebook or clients, with their OK).
-7. **Email for the forms**: the booking and mailing list forms send nothing yet. Put her email in `data-email=""` on
-   `<form id="book-form">` and `<form id="news-form">` and they'll open an email to her with everything filled in.
-   Until then they thank the visitor and point them to Facebook. A form service (like Formspree) or her mailing list
-   tool can replace this later.
-8. **Photos of the real space**: the generated photos stand in until she has her own. Use Swap picture in the
-   builder.
+2. **Gift cards**: the amounts and how to buy them.
+3. **Reviews**: three quotes and guest names (real ones from Facebook or clients, with their OK).
+4. **Her email / form key** in `data/schedule.json` (see above). Until then the forms point visitors to her phone.
+5. **Prices of the Spiritual Wellness 101 classes** and the days of the two $20 crystal classes: not on her poster
+   or price list, so they aren't on the page.
 
 Also to confirm with her: the shop hours (Mon to Fri, 11 am to 2 pm, from her Instagram bio) are still right,
 whether she'd like the shop to list products or prices, and whether she wants her name shown.

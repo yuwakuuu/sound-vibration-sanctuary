@@ -27,8 +27,16 @@
     }
   });
 
-  // Forms: they open an email to the sanctuary once its address is set in data-email on the <form>.
-  // Until then they say so plainly and point to Facebook, so no message is ever silently lost.
+  // Forms: they open an email to the sanctuary once its address is set, either in data-email on the <form> or once
+  // for the whole site as "email" in data/schedule.json (the same line the RSVP calendar uses).
+  // Until then they say so plainly and point to her phone (texting is best), so no message is ever silently lost.
+  var siteEmail = '';
+  if (window.fetch) {
+    fetch('data/schedule.json', { cache: 'no-cache' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { siteEmail = String(j.email || '').trim(); })
+      .catch(function () {});
+  }
   function status(form, text) { var s = form.querySelector('.form-status'); if (s) s.textContent = text; }
   function wire(form, subject, body) {
     if (!form) return;
@@ -42,9 +50,9 @@
       }
       var name = form.querySelector('[name=name]');
       if (name && !name.value.trim()) { status(form, 'Please tell us your name.'); name.focus(); return; }
-      var to = (form.getAttribute('data-email') || '').trim();
+      var to = (form.getAttribute('data-email') || '').trim() || siteEmail;
       if (!to) {
-        status(form, 'Thank you! Online messages are not connected yet, so please message us on Facebook and we will get back to you.');
+        status(form, 'Thank you! Online messages are not connected yet, so please text 480-265-6136 and we will get back to you.');
         return;
       }
       window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject(form)) + '&body=' + encodeURIComponent(body(form));
