@@ -191,7 +191,7 @@
       html += '<li class="slot' + (open ? '' : ' is-closed') + (picked && picked.id === s.id ? ' is-picked' : '') + '">' +
         '<div class="slot-main"><span class="slot-when">' + esc((iso ? '' : B.longDate(s.date) + ' · ') + B.time12(s.start) + ' to ' + B.time12(s.end)) + '</span>' +
         '<strong class="slot-title">' + esc(s.title) + '</strong>' +
-        '<span class="slot-meta">$' + s.price + ' per person · ' + (s.dogs ? 'dogs welcome, free' : 'no dogs') + '</span>' +
+        '<span class="slot-meta">$' + s.price + ' per person' + (s.dogs ? ' · dogs welcome, free' : '') + '</span>' +
         '<span class="slot-spots">' + esc(spotsText(s)) + '</span>' +
         '<span class="meter" aria-hidden="true"><span style="width:' + pct + '%"></span></span></div>' +
         (open ? '<button type="button" class="btn btn-outline btn-sm" data-pick="' + esc(s.id) + '">' + (picked && picked.id === s.id ? 'Chosen' : 'RSVP') + '</button>'
