@@ -364,3 +364,11 @@ def test_a_live_edit_in_the_builder_lands_as_a_small_exact_change(builder):
     text = (site / "index.html").read_text(encoding="utf-8")
     assert text == PAGE.replace(">Discover Inner Peace</h1>", ">Find Your Calm</h1>").replace(
         '<span class="ph">Gift card amounts and how to buy them</span>', '<span class="ph">$25 and $50, at the shop</span>')
+
+
+def test_no_shop_tab_she_does_not_sell_online():
+    # Linda (2026-11-27): no "Shop" tab, she doesn't take online orders; the in-person shop section stays
+    assert '>Shop</a>' not in PAGE
+    assert 'id="shop"' in PAGE and "Mon to Fri, 11 am to 2 pm" in PAGE
+    assert 'href="#shop">Visit us in the shop</a>' in PAGE
+    assert not re.search(r"order online|online order|add to cart|checkout", PAGE, re.I)
