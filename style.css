@@ -169,14 +169,6 @@ p { margin: 0 0 1em; }
 .creds li { display: flex; gap: 12px; align-items: flex-start; }
 .creds li::before { content: ""; flex: none; width: 10px; height: 10px; margin-top: .6em; border-radius: 50%; background: var(--lavender); box-shadow: 0 0 0 5px var(--mist); }
 
-/* Gallery */
-.gallery-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); }
-.gallery-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 18px; }
-@media (min-width: 900px) {
-  .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  .gallery-grid img { aspect-ratio: 4 / 3; }
-}
-
 /* Gift cards */
 .gift { background: linear-gradient(135deg, var(--plum), var(--violet)); color: #f1edfb; border-radius: calc(var(--radius) + 10px); padding: clamp(32px, 6vw, 64px); display: grid; gap: 28px; align-items: center; overflow: hidden; position: relative; }
 .gift h2 { color: var(--white); }
@@ -360,12 +352,6 @@ button.cal-day.is-picked i { background: var(--white); }
 }
 .shop-img { aspect-ratio: 4 / 5; }
 .about-img { object-position: 72% center; }
-.gallery-grid .wide { grid-column: span 2; aspect-ratio: 4 / 3; object-position: center 30%; }
-@media (min-width: 900px) {
-  .gallery-grid { grid-template-columns: repeat(6, 1fr); }
-  .gallery-grid img { grid-column: span 2; }
-  .gallery-grid .wide, .gallery-grid .wide + img { grid-column: span 3; }
-}
 
 /* From her "Wellness Rates & Offerings" flier: dotted leaders between a service and its price, and her care note */
 .card-top h3 { flex: 1; }

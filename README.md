@@ -33,8 +33,8 @@ headings and Quicksand for the text (Quicksand is the font her current site uses
     Rhodochrosite): `images/crystals/`, shown in the "Crystals in the shop" section.
   - IMG_3255 to IMG_3492 and IMG_3521/3522: the sound room, the treatment room, the crystal layout table, her with
     the bowls and gongs, and the shop shelves (`images/shop-shelves-1..5.webp`, `treatment-room.webp` and the others).
-    `og.jpg` (the link preview) is cut from the sound room photo. IMG_3486 is her Spiritual Wellness 101 Series
-    poster (Wednesdays 6:30 to 8 pm, Nov 4 to Dec 30): shown as a picture, and its remaining dates are listed.
+    IMG_3486 is her Spiritual Wellness 101 Series poster (Wednesdays 6:30 to 8 pm, Nov 4 to Dec 30): shown as a
+    picture, and its remaining dates are listed.
   - IMG_3539 (her December schedule) and IMG_3547 (her flyer "December Sound Meditation: An hour with singing bowls
     and gongs"): Group Sound Meditation on Fridays Dec 4, 11 and 18, 6 to 7 pm, $20, no dogs; Group Sound
     Meditation with Your Dog on Sundays Dec 6 and 13, 12:30 to 1:30 pm, $30 per person, 8 people and 4 dogs max;
@@ -52,14 +52,44 @@ headings and Quicksand for the text (Quicksand is the font her current site uses
     her note that the services "are not a substitute for medical or mental health care" (under the sessions and in
     the footer). Its dotted price leaders are echoed on the session cards and classes. It still lists private groups
     of fourteen; the owner has since made every group 10, so the site says 10.
+- **A calmer look** (2026-11-27): Linda found her group shot of all her instruments with the hanging mandala too
+  busy for the main photo and asked for calm, tight shots of one or two instruments; the busy photos suit Instagram.
+  She sent three new photos (IMG_3808, IMG_3812, IMG_3816 in the same folder, originals untouched), cropped to their
+  spots and saved as WebP. The chakra card's picture is a close crop of her crystal layout table (IMG_3522), so the
+  crowded shelves behind it are gone. The old hero, `sound-bath-room`, `gongs-and-bowls`, `practitioner-gongs`,
+  `crystal-layout-table` and `shop-shelves-1..5` are off the page, and so is the gallery that held most of them; the
+  files stay in `images/`, so Swap picture in the builder can bring any of them back. More calm photos from her may
+  follow: see "Which picture is where" below.
 - **Made on this PC**: the dog and oracle card photos are still stand-ins from TOB's image generator (she had no
-  photos of those yet). Swap them in the builder when she has her own.
+  photos of those yet). So is the hero picture (`images/hero.webp`, crystal singing bowls and amethyst on a linen
+  mat), which Linda chose on 2026-11-27 because it felt calmer than her group shot; `og.jpg` (the link preview) is
+  cut from it. Swap any of them in the builder when she has her own. The schema's `image` is a real photo of her
+  place (`images/tibetan-bowls.webp`), not a generated one.
+
+## Which picture is where
+Each spot crops its picture to a fixed shape, so a new photo fits best when its subject sits in the middle of that
+shape. In the builder, use Swap picture (its launch check then fills in the new picture's size). By hand, put a WebP
+of 1600px or less in `images/` and change the `src`, `width`, `height` and `alt` in `index.html`; for the hero, also
+change the `preload` line in the `<head>`.
+
+| Spot | Picture | Shape |
+|---|---|---|
+| Hero (top of the page) | `hero.webp` (made on this PC) | wide; the words sit over its left side |
+| Group sound meditation | `tibetan-bowls.webp` (IMG_3808: three Tibetan bowls) | 4:3 |
+| Private sound healing | `crystal-singing-bowl.webp` (IMG_3816: one crystal bowl) | 4:3 |
+| Sound meditation with your dog | `dog.webp` (made on this PC) | 4:3 |
+| On-body Tibetan bowl vibration | `treatment-room.webp` | 4:3 |
+| Chakra reading & balancing | `crystal-layout-close-up.webp` (from IMG_3522) | 4:3 |
+| Oracle card reading | `oracle.webp` (made on this PC) | 4:3 |
+| The shop | `shop-lotus-panel.webp` (IMG_3812: lotus panel over the sage table) | 4:5, tall |
+| Our story | `practitioner-crystal-bowls.webp` (Linda with the bowls) | 4:5, tall |
+| Crystals in the shop | `crystals/*.webp` | square |
 
 ## On the page
 Header with her logo and an RSVP button, a hero with "Hear a singing bowl" (a soft bowl tone made in the browser, only when
 clicked), a welcome quote and three pillars, sessions and prices (each "Book this" picks that session in the form),
 a "coming soon" note for Past Life Regression (QHHT), the December calendar and RSVP form, crystal classes and
-the Spiritual Wellness 101 dates, the crystals in the shop, the shop (crystals, specimens, gifts, jewelry) with its hours, what to expect, her story with her credentials, a gallery, gift cards, a reviews
+the Spiritual Wellness 101 dates, the crystals in the shop, the shop (crystals, specimens, gifts, jewelry) with its hours, what to expect, her story with her credentials, gift cards, a reviews
 area, hours, phone and location with a map and directions, a message form, a mailing list signup, Instagram and Facebook links, and a
 footer with the TMP credit. It has LocalBusiness schema (HealthAndBeautyBusiness, with her real prices as offers),
 share tags, labelled forms, a skip link, visible focus, support for reduced motion, and it is mobile-first.
@@ -107,7 +137,8 @@ into these same files (its own styles go in `builder.css`). Nothing goes online 
 
 ## Tests
 `tests/test_site.py`: the rebrand is complete, her real facts and prices are on the page, unknowns are placeholders,
-the schema is valid, every picture is there with alt text and a size, and the page opens and saves cleanly in the
-website builder. Run it with TOB's Python:
+the schema is valid, every picture is there with alt text and its real size, the calm photos lead (none of the busy
+ones Linda said suit Instagram better), and the page opens and saves cleanly in the website builder. Run it with
+TOB's Python:
 
     C:\Users\ayala\Projects\TOB-OS\.venv\Scripts\python.exe -m pytest tests -q

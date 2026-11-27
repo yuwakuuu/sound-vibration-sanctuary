@@ -27,6 +27,11 @@ CONFIG = json.loads((SITE / "data" / "config.json").read_text(encoding="utf-8"))
 PHONE = "480-265-6136"   # her crystal shop's number, from her December flyer ("Text 480-265-6136 to RSVP")
 FACEBOOK = "https://www.facebook.com/Soundvibrationsanctuary/"
 INSTAGRAM = "https://www.instagram.com/soundvibrationsanctuary/"
+# Linda, 2026-11-27: her busy photos (the group shot of all her instruments with the hanging mandala, the full rooms and
+# the crowded shelves) suit Instagram; the site wants calm, tight shots. They stay in images/ but aren't shown.
+BUSY = ["sound-room-bowls-gongs", "sound-bath-room", "gongs-and-bowls", "practitioner-gongs", "crystal-layout-table",
+        "shop-shelves-1", "shop-shelves-2", "shop-shelves-3", "shop-shelves-4", "shop-shelves-5"]
+GENERATED = {"images/hero.webp", "images/dog.webp", "images/oracle.webp"}   # made on this PC (README)
 
 
 class Tags(HTMLParser):
@@ -104,6 +109,8 @@ def test_local_business_schema_is_valid_and_honest():
     assert "aggregateRating" not in data and "review" not in data
     assert "up to 10 participants" in json.dumps(data)
     assert len(data["hasOfferCatalog"]["itemListElement"]) == 8
+    image = data["image"].replace("https://soundvibrationsanctuary.com/", "")
+    assert (SITE / image).is_file() and image not in GENERATED, "the schema shows a real photo of her place"
 
 
 def test_every_picture_is_there_with_alt_text_and_a_size():
@@ -131,12 +138,34 @@ def test_her_photos_are_used():
     for stone in ["Aquamarine", "Celestite", "Fluorite", "Garnet", "Herkimer Diamonds", "Quartz crystals", "Rhodochrosite"]:
         slug = stone.lower().replace(" ", "-")
         assert f"images/crystals/{slug}.webp" in srcs and f"<figcaption>{stone}</figcaption>" in PAGE
-    # the shop shelves, the treatment room and the sound room
-    for f in ["shop-shelves-1", "shop-shelves-2", "shop-shelves-3", "shop-shelves-4", "shop-shelves-5", "treatment-room",
-              "crystal-layout-table", "sound-bath-room", "sound-room-bowls-gongs", "practitioner-gongs"]:
+    # the treatment room, her portrait, and her calm close-ups (2026-11-27: Tibetan bowls, a crystal singing bowl, the
+    # lotus panel over the sage table, the crystals on her layout table)
+    for f in ["treatment-room", "practitioner-crystal-bowls", "tibetan-bowls", "crystal-singing-bowl", "shop-lotus-panel",
+              "crystal-layout-close-up"]:
         assert f"images/{f}.webp" in srcs, f
     for a in imgs:
         assert max(int(a["width"]), int(a["height"])) <= 1600, f"{a['src']} should be 1600px or less"
+
+
+def test_the_page_feels_calm_not_cluttered():
+    hero = [a for a in tags("img") if a.get("class") == "hero-img"]
+    assert len(hero) == 1 and hero[0]["src"] == "images/hero.webp", "the calm picture Linda chose leads the page"
+    assert [a["href"] for a in tags("link") if a.get("rel") == "preload"] == [hero[0]["src"]], "preload the hero itself"
+    for name in BUSY:
+        assert f"images/{name}." not in PAGE, f"{name} is one of the busy photos"
+        assert (SITE / "images" / f"{name}.webp").is_file(), f"{name} stays in images/ so Swap picture can bring it back"
+    assert 'id="gallery"' not in PAGE and "#gallery" not in PAGE, "the gallery of busy shelf photos is off the page"
+
+
+def test_picture_sizes_match_the_files():
+    """width and height are each picture's real size, so nothing jumps while the page loads (the builder's launch check
+    measures a swapped picture the same way), and the link preview is the 1200 x 630 its tags say."""
+    Image = pytest.importorskip("PIL.Image")
+    for a in tags("img"):
+        with Image.open(SITE / a["src"]) as im:
+            assert im.size == (int(a["width"]), int(a["height"])), a["src"]
+    with Image.open(SITE / "og.jpg") as im:
+        assert im.size == (1200, 630)
 
 
 # ------------------------------------------------------------------------------------- her December schedule & RSVPs
